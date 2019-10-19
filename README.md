@@ -1,7 +1,7 @@
 ---
-
 **将数据库的评论分析后展示排名**
 ---
+
 入口函数：showFlask.py
 
 包说明：
@@ -9,6 +9,12 @@
 DataBase：连接数据库
 
 static：存放一些静态资源，如：css，img，js等等
+
+label_get_scenerys：通过标签查找景点（模块）
+
+mappingScenery：通过标签名找到景点
+
+relatedSites：寻找关联景点
 
 templates：存放页面的地方
 
@@ -30,7 +36,7 @@ Flask：是一个 web 框架。也就是说 Flask 为你提供工具，库和技
 
 make_word_cloud ---- DataBase ---- DB.py
                   
-                  ---- static ---- css ----
+                  ---- static ---- css ---- chooseLabel.css
                                 
                               ---- js ---- jquery.min.js
                               
@@ -43,11 +49,23 @@ make_word_cloud ---- DataBase ---- DB.py
                                        ---- 2.png
                   
                   ---- templates ---- index.html
+                  
+                                 ---- chooseLabel.html
                    
                   ---- logs ---- DB_log.log
                             
                   ---- utils ---- logUtil.py
                   
+                  ---- label_get_scenerys ---- mappingScenery ---- findScenery.py
+                  
+                                          ---- relatedSites ---- Apriori.py
+                                          
+                                                            ---- dealData.py
+                                                            
+                                                            ---- matvhing.py
+                                          
+                                          ---- moduleInterface.py        
+                                          
                   ---- main.py
                   
                   ----README.md
@@ -56,6 +74,11 @@ make_word_cloud ---- DataBase ---- DB.py
 **依赖包**
 ---
 
-flask： 用于分词
+flask： python的Web框架
 
 pymysql：用于连接数据库
+
+---
+**添加**
+---
+将模块五的标签查找景点功能整合了进来

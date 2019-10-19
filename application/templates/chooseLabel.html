@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>标签选择景点</title>
+		<script type="text/javascript" src="http://api.map.baidu.com/api?v=3.0&ak=******"></script>
+		<script type="text/javascript" src="/static/js/mapjson.js"></script>
+        <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+        <link href="/static/css/chooseLabel.css" rel="stylesheet" type="text/css" />
+	</head>
+	<body>
+		<div class="gwq_content">
+			<div class="gwq_labels_box">
+				<div class="gwq_box_line" id="4554653525">
+					{% for bigLabel in bigLabels %}
+						<div class="gwq_box_label" onclick="labelType('{{loop.index0}}',this)">{{bigLabel}}</div><div class="gwq_box_right"></div>
+					{% endfor %}
+				</div>
+				<div class="gwq_small_line" id="4554653526">
+					{% for smallLabels in smallLabelss %}
+						<div class="gwq_box_line small_one" style="display:none;">
+							{% for smallLabel in smallLabels %}
+								<div class="gwq_box_label" onclick="editLabel('{{smallLabel}}',this)">{{smallLabel}}</div><div class="gwq_box_right"></div>
+							{% endfor %}
+						</div>
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+		<div class="gwq_show_map" id="map_zone">
+			
+		</div>
+		<script type="text/javascript">
+			var showLine = -1;
+			var lastType = null;
+			var labelArray = new Array();
+            var map = new BMap.Map("map_zone");
+            // 初始化地图，设置中心点坐标和地图级别
+			map.centerAndZoom(new BMap.Point(121.62, 38.92), 12);
+            // 滑轮放大缩小地图
+			map.enableScrollWheelZoom(true);
+			// 添加其他控件
+			map.addControl(new BMap.NavigationControl());
+			map.addControl(new BMap.ScaleControl());
+			map.addControl(new BMap.OverviewMapControl());
+			map.setCurrentCity("大连"); // 仅当设置城市信息时，MapTypeControl的切换功能才能可用
+			map.setMapStyleV2({
+				styleJson : mapJson
+			});
+			// 第一层标签
+			function labelType(lineNum,event) {
+				num = parseInt(lineNum);
+				bigLine = document.getElementById("4554653525");
+				if(lastType != null) {
+					if(lastType == event) {	//如果是同一个标签
+						event.style.backgroundColor = "#FFF";
+						smallLine.children.item(showLine).style.display = "none";
+						lastType = null;
+						showLine = -1;
+						return 0;
+					}else {
+						lastType.style.backgroundColor = "#FFF";
+						event.style.backgroundColor = "#333";
+					}
+				}else {
+					// 设置当前对象背景颜色为灰色
+					event.style.backgroundColor = "#333";
+				}
+				lastType = event;
+				smallLine = document.getElementById("4554653526");
+				if(showLine == num) return 0;
+				if(showLine == -1) {
+					smallLine.children.item(num).style.display = "block";
+					showLine = num;
+				}else {
+					smallLine.children.item(showLine).style.display = "none";
+					smallLine.children.item(num).style.display = "block";
+					showLine = num;
+				}
+			}
+			// 选择相应的标签
+			function editLabel(label,event) {
+				// 取标签值
+				if(labelArray.indexOf(label) != -1) {
+					labelArray.pop(label);
+					event.style.backgroundColor = "#FFF";
+				}else {
+					labelArray.push(label);
+					event.style.backgroundColor = "#333";
+				}
+				// 回传标签给后台，返回景点列表
+				// 异步函数
+				$.post("/getLabel",{"labels":labelArray},function(data){
+					var array = JSON.parse(data);
+					map.clearOverlays();
+					// 在地图上绘点
+					// 由于上面的是异步函数，为了同步写到一起
+					var mypoints = new Array();
+					for(var i = 0; i < array.length; i++) {
+						var content = array[i]['scenery_name'];
+						var pointX = array[i]['longitude'];
+						var pointY = array[i]['latitude'];
+						// 定义窗口事件
+						var opts = {
+							width : 60,
+							height : 40,
+							title : "景点名",
+							enableMessage : true
+						};
+						function openInfo(content,e){
+							var infoW = new BMap.InfoWindow(content,opts); // 创建信息窗口对象
+							map.openInfoWindow(infoW,e.point); //开启信息窗口
+						}
+						mypoints.push(new BMap.Point(pointX,pointY));
+						var mkr = new BMap.Marker(new BMap.Point(pointX,pointY));
+						// 定义标记点击事件
+						function addClickHandler(content,mkr){
+							mkr.addEventListener("click",function(e){
+								openInfo(content,e)
+							})
+						}
+						addClickHandler(content, mkr); //添加点击事件
+						map.addOverlay(mkr);
+					}
+				});
+			}
+		</script>
+	</body>
+</html>

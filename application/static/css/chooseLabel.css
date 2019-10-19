@@ -1,0 +1,50 @@
+.gwq_content {
+	margin-bottom: 50px; 
+}
+/*标签区域*/
+.gwq_labels_box {
+	width: 90%;
+/*	height: 200px;
+	border: 1px #000 solid;*/
+	margin: 10px auto;
+	display: block;
+}
+.gwq_box_line {
+	width: 98%;
+	float: left;
+	/*height: 46px;*/
+	margin-bottom: 4px;
+}
+/*.small_one {
+	display: none;
+}*/
+.gwq_box_label {
+	text-align:center;
+	width: 70px;
+	height: 30px;
+	border: 1px #000 solid;
+	/*box-shadow: 2px 2px 5px rgba(0,0,0,0.7);*/
+	margin: 5px 0px 5px 5px;
+	float: left;
+	display: block;
+	cursor:pointer;
+}
+.gwq_box_right {
+	width: 15px;
+	height: 30px;
+	border: 1px #000 solid;
+	border-top-right-radius: 5px;
+	border-bottom-right-radius: 5px;
+	margin: 5px 5px 5px 0px;
+	float: left;
+}
+/*地图区域*/
+.gwq_show_map {
+	width: 90%;
+	height: 500px;
+	/*background-color: #ccc;*/
+	border-radius: 5px;
+	border: 1px #000 solid;
+	margin: 10px auto;
+	display: block;
+}
