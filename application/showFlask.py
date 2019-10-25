@@ -3,7 +3,7 @@ from DataBase import DB
 from datetime import timedelta
 import json,redis,os
 from label_get_scenerys import moduleInterface as mf
-from utils import logUtil
+from utils import logUtil, getDistance
 
 logger = logUtil.getLogger(0)
 app = Flask(__name__)
@@ -51,6 +51,7 @@ def choosePage():
     smallLabelss = [['海鸥', '老虎', '螃蟹', '鳄鱼'],['大海', '公园', '树木', '山顶'],['博物馆', '抗日', '监狱', '纪念馆'],['教育', '雕塑', '海鲜', '健身']]
     return render_template('chooseLabel.html',bigLabels=bigLabels, smallLabelss=smallLabelss)
 
+# 路由取值
 @app.route('/getLabel',methods=["post"])
 def getLabel():
     labels = request.form.getlist("labels[]") # 由于返回什么就写什么
@@ -68,7 +69,25 @@ def getLabel():
             json_dict['longitude'] = r[0][0]
             json_dict['latitude'] = r[0][1]
             json_list.append(json_dict)
-    return json.dumps(json_list) # 要有返回值
+    return json.dumps(getShortScenery(json_list)) # 要有返回值
+
+# 有贪心算法得到景点最短距离列表
+# 参数：含有景点名称以及经纬度的字典数组
+# 返回：排好序的景点列表
+def getShortScenery(results):
+    if(len(results) < 2) :
+        return results
+    else:
+        for i in range(0, len(results) - 1):
+            min = 99999999999
+            minNumber = 0
+            for j in range(i + 1, len(results)):
+                temp_distance = getDistance.twoPointDistance(results[i]['latitude'], results[i]['longitude'], results[j]['latitude'], results[j]['longitude'])
+                if temp_distance < min:
+                    min, minNumber = temp_distance, j
+            if not minNumber == 0:
+                results[i+1], results[minNumber] = results[minNumber], results[i+1]
+    return results
 
 if __name__ == '__main__':
     app.jinja_env.auto_reload = True

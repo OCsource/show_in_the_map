@@ -4,7 +4,7 @@
 		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<title>标签选择景点</title>
-		<script type="text/javascript" src="http://api.map.baidu.com/api?v=3.0&ak=******"></script>
+		<script type="text/javascript" src="http://api.map.baidu.com/api?v=3.0&ak=*******************"></script>
 		<script type="text/javascript" src="/static/js/mapjson.js"></script>
         <script type="text/javascript" src="/static/js/jquery.min.js"></script>
         <link href="/static/css/chooseLabel.css" rel="stylesheet" type="text/css" />
@@ -97,7 +97,7 @@
 					// 在地图上绘点
 					// 由于上面的是异步函数，为了同步写到一起
 					var mypoints = new Array();
-					for(var i = 0; i < array.length; i++) {
+					for(i = 0; i < array.length; i++) {
 						var content = array[i]['scenery_name'];
 						var pointX = array[i]['longitude'];
 						var pointY = array[i]['latitude'];
@@ -122,6 +122,21 @@
 						}
 						addClickHandler(content, mkr); //添加点击事件
 						map.addOverlay(mkr);
+					}
+					// 连接两个点之间的距离
+					for(i = 0; i < mypoints.length - 1; i++) {
+						j = i + 1;
+						if(mypoints[i].lng == mypoints[j].lng && mypoints[i].lat == mypoints[j].lat) {
+							console.log(myarrays[i*3] + "与" + myarrays[j*3] + "两点在同一位置" )
+						}else {
+							var polyline = new BMap.Polyline(
+								[
+									mypoints[i],
+									mypoints[j]
+								], {strokeColor:"green", strokeWeight:6, strokeOpacity:0.5}
+							);
+							map.addOverlay(polyline)
+						}
 					}
 				});
 			}
